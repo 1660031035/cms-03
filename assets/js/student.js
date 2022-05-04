@@ -61,21 +61,66 @@ document.querySelector('tbody').addEventListener('click', function (e) {
 // 页面一加载 显示省
 function setCity(id) {
   let select1 = document.querySelector(`#${id} [name="province"]`)
+  let select2 = document.querySelector(`#${id} [name="city"]`)
+  let select3 = document.querySelector(`#${id} [name="county"]`)
   axios({
     url: '/geo/province',
     method: 'get',
   }).then(({
     data: res
   }) => {
-
-    console.log(res)
+    // console.log(res)
     let arr = ['<option value="">--省--</option>']
     res.forEach(item => {
       arr.push(`<option value="${item}">${item}</option>`)
     })
     select1.innerHTML = arr.join('')
-    console.log(select1)
+    // console.log(select1)
   })
+  // 市
+  select1.onchange = function () {
+    axios({
+      url: '/geo/city',
+      method: 'get',
+      params: {
+        pname: select1.value
+      }
+    }).then(({
+      data: res
+    }) => {
+      //成功回调
+      let arr = ['<option value="">--市--</option>']
+      res.forEach(item => {
+        arr.push(`<option value="${item}">${item}</option>`)
+      })
+      select2.innerHTML = arr.join('')
+    })
+    // 区
+    select2.onchange = function () {
+      axios({
+        url: '/geo/county',
+        method: 'get',
+        params: {
+          pname: select1.value,
+          cname: select2.value
+        }
+      }).then(({
+        data: res
+      }) => {
+        //成功回调
+        let arr = ['<option value="">--县--</option>']
+        res.forEach(item => {
+          arr.push(`<option value="${item}">${item}</option>`)
+        })
+        select3.innerHTML = arr.join('')
+      })
+    }
+  }
+
 }
 setCity('addModal')
 setCity('updateModal')
+
+document.querySelector('.header [type="button"]').addEventListener('click', function () {
+  console.log(11);
+})
